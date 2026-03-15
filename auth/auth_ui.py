@@ -47,6 +47,14 @@ def show_auth_page():
                         st.session_state.user      = user
                         st.session_state.user_id   = user['id']
                         st.session_state.username  = user['username']
+                        # Cookie set karo session persist ke liye
+                        try:
+                            import extra_streamlit_components as stx
+                            cookie_manager = stx.CookieManager(key='login_cookies')
+                            cookie_manager.set('pm_user_id',  user['id'],       key='set_uid')
+                            cookie_manager.set('pm_username', user['username'],  key='set_uname')
+                        except:
+                            pass
                         st.success(f"Welcome, {user['username']}!")
                         st.rerun()
                     else:
