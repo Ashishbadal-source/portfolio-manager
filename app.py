@@ -242,10 +242,18 @@ with st.sidebar:
 if st.session_state.enriched_df.empty:
     raw_df = get_portfolio(user_id)
     if not raw_df.empty:
-        summary_df = get_portfolio_summary(user_id)
+        summary_df   = get_portfolio_summary(user_id)
         tickers_list = summary_df['ticker'].tolist()
         with st.spinner("Fetching live prices..."):
             prices = fetch_live_prices(tickers_list)
+
+        # Agar prices nahi aaye toh buy_price use karo as fallback
+        for ticker in tickers_list:
+            if ticker not in prices or prices[ticker] is None:
+                row = summary_df[summary_df['ticker'] == ticker]
+                if not row.empty:
+                    prices[ticker] = float(row['avg_buy_price'].values[0])
+
         st.session_state.live_prices  = prices
         st.session_state.enriched_df  = enrich_portfolio(prices, user_id)
         st.session_state.last_refresh = datetime.now()

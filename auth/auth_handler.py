@@ -82,7 +82,26 @@ def get_current_user_id():
     return st.session_state.get('user_id', None)
 
 def init_auth_session():
-    if 'logged_in' not in st.session_state: st.session_state.logged_in = False
-    if 'user'       not in st.session_state: st.session_state.user      = None
-    if 'user_id'    not in st.session_state: st.session_state.user_id   = None
-    if 'username'   not in st.session_state: st.session_state.username  = None
+    if 'logged_in' not in st.session_state:
+        st.session_state.logged_in = False
+    if 'user' not in st.session_state:
+        st.session_state.user = None
+    if 'user_id' not in st.session_state:
+        st.session_state.user_id = None
+    if 'username' not in st.session_state:
+        st.session_state.username = None
+
+    # Auto restore session from Supabase
+    if not st.session_state.logged_in:
+        try:
+            supabase = get_supabase()
+            session  = supabase.auth.get_session()
+            if session and session.user:
+                user_data = supabase.table('users').select('username').eq(
+                    'id', session.user.id).execute()
+                username = user_data.data[0]['username'] if user_data.data else session.user.email.split('@')[0]
+                st.session_state.logged_in = True
+                st.session_state.user_id   = session.user.id
+                st.session_state.username  = username
+        except:
+            pass
