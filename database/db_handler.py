@@ -1,9 +1,7 @@
 ﻿import os
+import streamlit as st
 from supabase import create_client
-from dotenv import load_dotenv
 import pandas as pd
-
-load_dotenv()
 
 try:
     SUPABASE_URL = st.secrets['SUPABASE_URL']
@@ -17,7 +15,6 @@ except:
 def get_supabase():
     return create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ── Portfolio ──────────────────────────────────────────────────────────────────
 def add_stock(user_id, ticker, buy_price, quantity, purchase_date):
     try:
         supabase = get_supabase()
@@ -70,7 +67,6 @@ def get_portfolio_summary(user_id):
         print(f"Portfolio summary error: {e}")
         return pd.DataFrame()
 
-# ── Watchlist ──────────────────────────────────────────────────────────────────
 def add_to_watchlist(user_id, ticker):
     try:
         supabase = get_supabase()
@@ -102,7 +98,6 @@ def remove_from_watchlist(user_id, ticker):
         print(f"Remove watchlist error: {e}")
         return False
 
-# ── Price Alerts ───────────────────────────────────────────────────────────────
 def add_price_alert(user_id, ticker, target_price, alert_type):
     try:
         supabase = get_supabase()
