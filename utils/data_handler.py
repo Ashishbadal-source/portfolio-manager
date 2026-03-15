@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 import numpy as np
 import yfinance as yf
 from database.db_handler import get_portfolio_summary

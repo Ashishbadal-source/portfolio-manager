@@ -1,19 +1,20 @@
-import os
+﻿import os
 import streamlit as st
 from supabase import create_client
 import pandas as pd
 
-try:
-    SUPABASE_URL = st.secrets['SUPABASE_URL']
-    SUPABASE_KEY = st.secrets['SUPABASE_KEY']
-except:
-    from dotenv import load_dotenv
-    load_dotenv()
-    SUPABASE_URL = os.getenv('SUPABASE_URL')
-    SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 
 def get_supabase():
-    return create_client(SUPABASE_URL, SUPABASE_KEY)
+    try:
+        url = st.secrets['SUPABASE_URL']
+        key = st.secrets['SUPABASE_KEY']
+    except:
+        from dotenv import load_dotenv
+        load_dotenv()
+        url = os.getenv('SUPABASE_URL')
+        key = os.getenv('SUPABASE_KEY')
+    return create_client(url, key)
+
 
 def add_stock(user_id, ticker, buy_price, quantity, purchase_date):
     try:
@@ -30,6 +31,7 @@ def add_stock(user_id, ticker, buy_price, quantity, purchase_date):
         print(f"Add stock error: {e}")
         return False
 
+
 def get_portfolio(user_id):
     try:
         supabase = get_supabase()
@@ -38,6 +40,7 @@ def get_portfolio(user_id):
     except Exception as e:
         print(f"Get portfolio error: {e}")
         return pd.DataFrame()
+
 
 def delete_stock(user_id, stock_id):
     try:
@@ -48,6 +51,7 @@ def delete_stock(user_id, stock_id):
     except Exception as e:
         print(f"Delete stock error: {e}")
         return False
+
 
 def get_portfolio_summary(user_id):
     try:
@@ -67,6 +71,7 @@ def get_portfolio_summary(user_id):
         print(f"Portfolio summary error: {e}")
         return pd.DataFrame()
 
+
 def add_to_watchlist(user_id, ticker):
     try:
         supabase = get_supabase()
@@ -79,6 +84,7 @@ def add_to_watchlist(user_id, ticker):
         print(f"Watchlist error: {e}")
         return False
 
+
 def get_watchlist(user_id):
     try:
         supabase = get_supabase()
@@ -87,6 +93,7 @@ def get_watchlist(user_id):
     except Exception as e:
         print(f"Get watchlist error: {e}")
         return pd.DataFrame()
+
 
 def remove_from_watchlist(user_id, ticker):
     try:
@@ -97,6 +104,7 @@ def remove_from_watchlist(user_id, ticker):
     except Exception as e:
         print(f"Remove watchlist error: {e}")
         return False
+
 
 def add_price_alert(user_id, ticker, target_price, alert_type):
     try:
@@ -112,6 +120,7 @@ def add_price_alert(user_id, ticker, target_price, alert_type):
         print(f"Add alert error: {e}")
         return False
 
+
 def get_price_alerts(user_id):
     try:
         supabase = get_supabase()
@@ -120,6 +129,7 @@ def get_price_alerts(user_id):
     except Exception as e:
         print(f"Get alerts error: {e}")
         return pd.DataFrame()
+
 
 def delete_price_alert(user_id, alert_id):
     try:

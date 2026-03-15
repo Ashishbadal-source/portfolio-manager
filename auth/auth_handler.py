@@ -1,20 +1,19 @@
 import streamlit as st
 from supabase import create_client
-from dotenv import load_dotenv
 import os
 
-try:
-    SUPABASE_URL = st.secrets['SUPABASE_URL']
-    SUPABASE_KEY = st.secrets['SUPABASE_KEY']
-except:
-    load_dotenv()
-    SUPABASE_URL = os.getenv('SUPABASE_URL')
-    SUPABASE_KEY = os.getenv('SUPABASE_KEY')
-
 def get_supabase():
-    return create_client(SUPABASE_URL, SUPABASE_KEY)
+    try:
+        url = st.secrets['SUPABASE_URL']
+        key = st.secrets['SUPABASE_KEY']
+    except:
+        from dotenv import load_dotenv
+        load_dotenv()
+        url = os.getenv('SUPABASE_URL')
+        key = os.getenv('SUPABASE_KEY')
+    return create_client(url, key)
 
-def signup_user(username: str, email: str, password: str):
+def signup_user(username, email, password):
     try:
         supabase = get_supabase()
         result = supabase.auth.sign_up({
@@ -34,7 +33,7 @@ def signup_user(username: str, email: str, password: str):
     except Exception as e:
         return False, f"Error: {str(e)}"
 
-def login_user(email: str, password: str):
+def login_user(email, password):
     try:
         supabase = get_supabase()
         result   = supabase.auth.sign_in_with_password({
@@ -61,8 +60,7 @@ def login_user(email: str, password: str):
 
 def logout_user():
     try:
-        supabase = get_supabase()
-        supabase.auth.sign_out()
+        get_supabase().auth.sign_out()
     except:
         pass
     st.session_state.logged_in = False
