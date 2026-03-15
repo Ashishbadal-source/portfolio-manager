@@ -1,39 +1,43 @@
-import streamlit as st
+﻿import streamlit as st
 from supabase import create_client
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
+
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+
 def get_supabase():
-    try:
-        url = st.secrets['SUPABASE_URL']
-        key = st.secrets['SUPABASE_KEY']
-    except:
-        from dotenv import load_dotenv
-        load_dotenv()
-        url = os.getenv('SUPABASE_URL')
-        key = os.getenv('SUPABASE_KEY')
+    url = "https://tkwvvprhrwnscjyspfig.supabase.co"
+    key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrd3Z2cHJocnduc2NqeXNwZmlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MjQwMzEsImV4cCI6MjA4OTEwMDAzMX0.VXC6TyZRf1pWC3INDULcy6aIIPsBeNJgk8AujbZx4E"
     return create_client(url, key)
 
-def signup_user(username, email, password):
+def signup_user(username: str, email: str, password: str):
     try:
         supabase = get_supabase()
+
+        # Supabase built-in auth se signup
         result = supabase.auth.sign_up({
             'email'   : email,
             'password': password,
             'options' : {'data': {'username': username}}
         })
+
         if result.user:
+            # Custom users table mein bhi save karo username ke liye
             supabase.table('users').insert({
                 'id'      : result.user.id,
                 'username': username,
                 'email'   : email,
                 'password': 'managed_by_supabase',
             }).execute()
-            return True, "Account created successfully!"
+            return True, "Account created! Please check your email to verify."
         return False, "Signup failed. Try again!"
     except Exception as e:
         return False, f"Error: {str(e)}"
 
-def login_user(email, password):
+def login_user(email: str, password: str):
     try:
         supabase = get_supabase()
         result   = supabase.auth.sign_in_with_password({
@@ -41,6 +45,7 @@ def login_user(email, password):
             'password': password,
         })
         if result.user:
+            # Username fetch karo users table se
             user_data = supabase.table('users').select('username').eq(
                 'id', result.user.id).execute()
             username = user_data.data[0]['username'] if user_data.data else email.split('@')[0]
@@ -60,7 +65,8 @@ def login_user(email, password):
 
 def logout_user():
     try:
-        get_supabase().auth.sign_out()
+        supabase = get_supabase()
+        supabase.auth.sign_out()
     except:
         pass
     st.session_state.logged_in = False
