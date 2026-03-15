@@ -3,13 +3,10 @@ from supabase import create_client
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
-
 try:
     SUPABASE_URL = st.secrets['SUPABASE_URL']
     SUPABASE_KEY = st.secrets['SUPABASE_KEY']
 except:
-    from dotenv import load_dotenv
     load_dotenv()
     SUPABASE_URL = os.getenv('SUPABASE_URL')
     SUPABASE_KEY = os.getenv('SUPABASE_KEY')
@@ -20,23 +17,19 @@ def get_supabase():
 def signup_user(username: str, email: str, password: str):
     try:
         supabase = get_supabase()
-
-        # Supabase built-in auth se signup
         result = supabase.auth.sign_up({
             'email'   : email,
             'password': password,
             'options' : {'data': {'username': username}}
         })
-
         if result.user:
-            # Custom users table mein bhi save karo username ke liye
             supabase.table('users').insert({
                 'id'      : result.user.id,
                 'username': username,
                 'email'   : email,
                 'password': 'managed_by_supabase',
             }).execute()
-            return True, "Account created! Please check your email to verify."
+            return True, "Account created successfully!"
         return False, "Signup failed. Try again!"
     except Exception as e:
         return False, f"Error: {str(e)}"
@@ -49,7 +42,6 @@ def login_user(email: str, password: str):
             'password': password,
         })
         if result.user:
-            # Username fetch karo users table se
             user_data = supabase.table('users').select('username').eq(
                 'id', result.user.id).execute()
             username = user_data.data[0]['username'] if user_data.data else email.split('@')[0]
