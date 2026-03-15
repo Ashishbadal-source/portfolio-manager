@@ -1,4 +1,4 @@
-﻿import pandas as pd
+import pandas as pd
 import io
 
 def export_to_excel(enriched_df, summary):

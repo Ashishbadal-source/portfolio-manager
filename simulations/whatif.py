@@ -1,4 +1,4 @@
-﻿import pandas as pd
+import pandas as pd
 import numpy as np
 
 def whatif_single_stock(enriched_df, ticker, change_pct):

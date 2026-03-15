@@ -1,4 +1,4 @@
-﻿import yfinance as yf
+import yfinance as yf
 
 def validate_ticker(ticker):
     """

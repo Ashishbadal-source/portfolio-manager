@@ -1,4 +1,4 @@
-﻿import pandas as pd
+import pandas as pd
 import numpy as np
 
 def calculate_rebalancing(enriched_df, target_weights=None):

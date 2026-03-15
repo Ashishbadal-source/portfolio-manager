@@ -1,4 +1,4 @@
-﻿import streamlit as st
+import streamlit as st
 from auth.auth_handler import signup_user, login_user
 
 def show_auth_page():
