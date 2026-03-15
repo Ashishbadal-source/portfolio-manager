@@ -1,16 +1,26 @@
 ﻿import pandas as pd
 import numpy as np
 import yfinance as yf
+import time
 from database.db_handler import get_portfolio_summary
+
 
 def fetch_live_prices(tickers):
     prices = {}
     if not tickers:
         return prices
     try:
+        time.sleep(2)
         tickers_str = ' '.join(tickers)
-        data = yf.download(tickers_str, period='1d', interval='1m',
-                          progress=False, auto_adjust=True)
+        data = yf.download(
+            tickers_str,
+            period='5d',
+            interval='1d',
+            progress=False,
+            auto_adjust=True
+        )
+        if data.empty:
+            raise Exception("Empty data")
         if len(tickers) == 1:
             prices[tickers[0]] = float(data['Close'].iloc[-1])
         else:
@@ -20,8 +30,20 @@ def fetch_live_prices(tickers):
                 except:
                     prices[ticker] = None
     except Exception as e:
-        print(f"Price fetch error: {e}")
+        print(f"Batch fetch failed: {e} — trying individually")
+        for ticker in tickers:
+            try:
+                time.sleep(1)
+                t    = yf.Ticker(ticker)
+                hist = t.history(period='5d')
+                if not hist.empty:
+                    prices[ticker] = float(hist['Close'].iloc[-1])
+                else:
+                    prices[ticker] = None
+            except:
+                prices[ticker] = None
     return prices
+
 
 def fetch_historical_data(ticker, period='1y'):
     try:
@@ -31,6 +53,7 @@ def fetch_historical_data(ticker, period='1y'):
     except Exception as e:
         print(f"Historical data error: {e}")
         return pd.DataFrame()
+
 
 def fetch_ticker_info(ticker):
     try:
@@ -45,6 +68,7 @@ def fetch_ticker_info(ticker):
         }
     except:
         return {'name': ticker, 'sector': 'Unknown', 'industry': 'Unknown'}
+
 
 def enrich_portfolio(live_prices, user_id):
     df = get_portfolio_summary(user_id)
@@ -66,6 +90,7 @@ def enrich_portfolio(live_prices, user_id):
 
     return df
 
+
 def portfolio_summary_stats(enriched_df):
     valid = enriched_df.dropna(subset=['current_value'])
     if valid.empty:
@@ -82,10 +107,16 @@ def portfolio_summary_stats(enriched_df):
         'worst_stock'      : valid.loc[valid['return_pct'].idxmin(), 'ticker'],
     }
 
+
 def get_returns_matrix(tickers, period='1y'):
     try:
-        raw = yf.download(' '.join(tickers), period=period,
-                         auto_adjust=True, progress=False)['Close']
+        time.sleep(1)
+        raw = yf.download(
+            ' '.join(tickers),
+            period=period,
+            auto_adjust=True,
+            progress=False
+        )['Close']
         if isinstance(raw, pd.Series):
             raw = raw.to_frame(name=tickers[0])
         returns = raw.pct_change().dropna()
