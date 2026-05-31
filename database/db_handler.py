@@ -6,8 +6,8 @@ import pandas as pd
 
 def get_supabase():
     try:
-        url = st.secrets['https://tkwvvprhrwnscjyspfig.supabase.co']
-        key = st.secrets['SUPABASE_KEY']
+        url = st.secrets['https://mdkwfjzmtdjncbiiygak.supabase.co'] # your database URL
+        key = st.secrets['SUPABASE_KEY'] # your database key
     except:
         from dotenv import load_dotenv
         load_dotenv()
