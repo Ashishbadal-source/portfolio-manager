@@ -10,7 +10,7 @@ SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 
 def get_supabase():
     url = "https://mdkwfjzmtdjncbiiygak.supabase.co"
-    key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrd3Z2cHJocnduc2NqeXNwZmlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MjQwMzEsImV4cCI6MjA4OTEwMDAzMX0.VX-C6TyZRf1pWC3INDULcy6aIIPsBeNJgk8AujbZx4E"
+    key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ka3dmanptdGRqbmNiaWl5Z2FrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTU5MTUsImV4cCI6MjA5NTc3MTkxNX0.StoYbAfmY9cRIuaXG_rIghJbrRZx5v38Av1aGoSUxIk"
     return create_client(url, key)
 
 def signup_user(username: str, email: str, password: str):
